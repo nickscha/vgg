@@ -32,10 +32,10 @@ int main(void)
     vgg_svg_color color_green = {0, 255, 0};
     vgg_svg_color color_blue = {0, 0, 255};
 
-    vgg_svg_add_rect(&w, 0, 0, 50, 50, color_red);
-    vgg_svg_add_rect(&w, 0, 50, 50, 50, color_green);
-    vgg_svg_add_rect(&w, 50, 0, 50, 50, color_blue);
-    vgg_svg_add_rect(&w, 50, 50, 50, 50, color_red);
+    vgg_svg_add_rect(&w, 1, 0, 0, 50, 50, color_red);
+    vgg_svg_add_rect(&w, 2, 0, 50, 50, 50, color_green);
+    vgg_svg_add_rect(&w, 3, 50, 0, 50, 50, color_blue);
+    vgg_svg_add_rect(&w, 4, 50, 50, 50, 50, color_red);
   }
   vgg_svg_end(&w);
 

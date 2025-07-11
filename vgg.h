@@ -47,7 +47,7 @@ VGG_API VGG_INLINE void vgg_svg_puts(vgg_svg_writer *w, const char *s)
 {
   while (*s && w->length < w->capacity)
   {
-    w->buffer[w->length++] = (unsigned char) *s++;
+    w->buffer[w->length++] = (unsigned char)*s++;
   }
 }
 
@@ -56,7 +56,7 @@ VGG_API VGG_INLINE void vgg_svg_putc(vgg_svg_writer *w, char c)
 {
   if (w->length < w->capacity)
   {
-    w->buffer[w->length++] = (unsigned char) c;
+    w->buffer[w->length++] = (unsigned char)c;
   }
 }
 
@@ -129,6 +129,7 @@ VGG_API VGG_INLINE void vgg_svg_end(vgg_svg_writer *w)
 
 VGG_API VGG_INLINE void vgg_svg_add_rect(
     vgg_svg_writer *w,
+    unsigned int rect_id,
     double x, double y, double width, double height,
     vgg_svg_color fill)
 {
@@ -144,7 +145,9 @@ VGG_API VGG_INLINE void vgg_svg_add_rect(
   color[5] = hex[fill.b & 0xF];
   color[6] = 0;
 
-  vgg_svg_puts(w, "<rect x=\"");
+  vgg_svg_puts(w, "<rect id=\"");
+  vgg_svg_put_uint(w, rect_id);
+  vgg_svg_puts(w, "\" x=\"");
   vgg_svg_put_double(w, x);
   vgg_svg_puts(w, "\" y=\"");
   vgg_svg_put_double(w, y);
