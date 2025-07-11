@@ -49,6 +49,219 @@ typedef struct vgg_svg_data_field
 
 } vgg_svg_data_field;
 
+/* Convert datatypes to string */
+
+/* Write integer value as decimal string into buffer.
+   buffer must have enough space.
+   Returns pointer to buffer.
+*/
+VGG_API VGG_INLINE char *vgg_itoa(int value, char *buffer)
+{
+  char temp[12]; /* enough for 32-bit int */
+  int i = 0, j, sign;
+
+  if (value == 0)
+  {
+    buffer[0] = '0';
+    buffer[1] = 0;
+    return buffer;
+  }
+
+  sign = (value < 0) ? -1 : 1;
+  if (sign == -1)
+    value = -value;
+
+  while (value != 0)
+  {
+    temp[i++] = (char)('0' + (value % 10));
+    value /= 10;
+  }
+  if (sign == -1)
+    temp[i++] = '-';
+
+  /* reverse */
+  for (j = 0; j < i; j++)
+    buffer[j] = temp[i - j - 1];
+  buffer[i] = 0;
+  return buffer;
+}
+
+/* Same for long */
+VGG_API VGG_INLINE char *vgg_ltoa(long value, char *buffer)
+{
+  char temp[20]; /* enough for 64-bit long */
+  int i = 0, j;
+  int sign = (value < 0) ? -1 : 1;
+
+  if (value == 0)
+  {
+    buffer[0] = '0';
+    buffer[1] = 0;
+    return buffer;
+  }
+
+  if (sign == -1)
+    value = -value;
+
+  while (value != 0)
+  {
+    temp[i++] = (char)('0' + (value % 10));
+    value /= 10;
+  }
+  if (sign == -1)
+    temp[i++] = '-';
+
+  for (j = 0; j < i; j++)
+    buffer[j] = temp[i - j - 1];
+  buffer[i] = 0;
+  return buffer;
+}
+
+/* Unsigned long to string */
+VGG_API VGG_INLINE char *vgg_ultoa(unsigned long value, char *buffer)
+{
+  char temp[20];
+  int i = 0, j;
+
+  if (value == 0)
+  {
+    buffer[0] = '0';
+    buffer[1] = 0;
+    return buffer;
+  }
+
+  while (value != 0)
+  {
+    temp[i++] = (char)('0' + (value % 10));
+    value /= 10;
+  }
+
+  for (j = 0; j < i; j++)
+    buffer[j] = temp[i - j - 1];
+  buffer[i] = 0;
+  return buffer;
+}
+
+VGG_API VGG_INLINE char *vgg_ftoa(double value, char *buffer, int precision)
+{
+  int int_part, frac_part, i = 0, j;
+  int multiplier = 1;
+
+  if (precision < 0)
+    precision = 0;
+  if (precision > 9)
+    precision = 9; /* prevent overflow */
+
+  /* Sign */
+  if (value < 0)
+  {
+    value = -value;
+    buffer[i++] = '-';
+  }
+
+  /* Integer part */
+  int_part = (int)value;
+  vgg_itoa(int_part, buffer + i);
+
+  /* Advance i to end of int_part string */
+  while (buffer[i] != '\0')
+  {
+    i++;
+  }
+
+  if (precision == 0)
+  {
+    buffer[i] = '\0';
+    return buffer;
+  }
+
+  buffer[i++] = '.';
+
+  /* Calculate fractional part multiplier */
+  for (j = 0; j < precision; ++j)
+    multiplier *= 10;
+
+  /* Extract fractional part */
+  frac_part = (int)((value - int_part) * multiplier + 0.5); /* round */
+
+  /* Write zero-padded fractional part */
+  {
+    char temp[10];
+    int k = 0;
+
+    if (frac_part == 0)
+    {
+      for (j = 0; j < precision; ++j)
+        buffer[i++] = '0';
+    }
+    else
+    {
+      /* Build fractional string backwards */
+      while (frac_part > 0 || k < precision)
+      {
+        temp[k++] = (char)('0' + (frac_part % 10));
+        frac_part /= 10;
+      }
+
+      /* Zero padding if needed */
+      while (k < precision)
+        temp[k++] = '0';
+
+      /* Copy reversed string to buffer */
+      while (k > 0)
+        buffer[i++] = temp[--k];
+    }
+  }
+
+  buffer[i] = '\0';
+  return buffer;
+}
+
+VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_int(char *key, int value, char *value_buffer)
+{
+  vgg_svg_data_field df;
+  df.key = key;
+  vgg_itoa(value, value_buffer);
+  df.value = value_buffer;
+  return df;
+}
+
+VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_long(char *key, long value, char *value_buffer)
+{
+  vgg_svg_data_field df;
+  df.key = key;
+  vgg_ltoa(value, value_buffer);
+  df.value = value_buffer;
+  return df;
+}
+
+VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_unsigned_long(char *key, unsigned long value, char *value_buffer)
+{
+  vgg_svg_data_field df;
+  df.key = key;
+  vgg_ultoa(value, value_buffer);
+  df.value = value_buffer;
+  return df;
+}
+
+VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_float(char *key, float value, int precision, char *value_buffer)
+{
+  vgg_svg_data_field df;
+  df.key = key;
+  vgg_ftoa((double)value, value_buffer, precision);
+  df.value = value_buffer;
+  return df;
+}
+
+VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_double(char *key, double value, int precision, char *value_buffer)
+{
+  vgg_svg_data_field df;
+  df.key = key;
+  vgg_ftoa(value, value_buffer, precision);
+  df.value = value_buffer;
+  return df;
+}
+
 /* Write a string literal to the buffer */
 VGG_API VGG_INLINE void vgg_svg_puts(vgg_svg_writer *w, const char *s)
 {

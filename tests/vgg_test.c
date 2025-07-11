@@ -15,6 +15,14 @@ LICENSE
 
 #include "test.h" /* Simple Testing framework */
 
+void vgg_test_data_field(void)
+{
+  char value_buffer[32];
+  vgg_svg_data_field f1 = vgg_data_field_create_float("weight", 20.0f, 4, value_buffer);
+
+  printf("%s, %s\n", f1.key, f1.value);
+}
+
 int main(void)
 {
 
@@ -50,6 +58,8 @@ int main(void)
   vgg_platform_write("test.svg", w.buffer, (unsigned long)w.length);
 
   assert(1 == 1);
+
+  vgg_test_data_field();
 
   return 0;
 }
