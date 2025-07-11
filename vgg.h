@@ -42,6 +42,13 @@ typedef struct vgg_svg_writer
   int length;
 } vgg_svg_writer;
 
+typedef struct vgg_svg_data_field
+{
+  char *key;
+  char *value;
+
+} vgg_svg_data_field;
+
 /* Write a string literal to the buffer */
 VGG_API VGG_INLINE void vgg_svg_puts(vgg_svg_writer *w, const char *s)
 {
@@ -131,7 +138,9 @@ VGG_API VGG_INLINE void vgg_svg_add_rect(
     vgg_svg_writer *w,
     unsigned int rect_id,
     double x, double y, double width, double height,
-    vgg_svg_color fill)
+    vgg_svg_color fill,
+    vgg_svg_data_field *data_fields,
+    int data_fields_count)
 {
   static const char hex[] = "0123456789ABCDEF";
   int i;
@@ -156,11 +165,28 @@ VGG_API VGG_INLINE void vgg_svg_add_rect(
   vgg_svg_puts(w, "\" height=\"");
   vgg_svg_put_double(w, height);
   vgg_svg_puts(w, "\" fill=\"#");
+
   for (i = 0; i < 6; ++i)
   {
     vgg_svg_putc(w, color[i]);
   }
-  vgg_svg_puts(w, "\" />\n");
+  vgg_svg_puts(w, "\"");
+
+  /* Add all data-* attributes */
+  for (i = 0; i < data_fields_count; ++i)
+  {
+    if (data_fields[i].key && data_fields[i].value &&
+        data_fields[i].key[0] && data_fields[i].value[0])
+    {
+      vgg_svg_puts(w, " data-");
+      vgg_svg_puts(w, data_fields[i].key);
+      vgg_svg_puts(w, "=\"");
+      vgg_svg_puts(w, data_fields[i].value);
+      vgg_svg_puts(w, "\"");
+    }
+  }
+
+  vgg_svg_puts(w, " />\n");
 }
 
 #endif /* VGG_H */

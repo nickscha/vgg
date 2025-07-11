@@ -18,8 +18,8 @@ LICENSE
 int main(void)
 {
 
-  /* vgg.h does not use File IO and just fills the buffer with the executable file data */
-  #define BINARY_CAPACITY 4096
+/* vgg.h does not use File IO and just fills the buffer with the executable file data */
+#define BINARY_CAPACITY 4096
   static unsigned char binary_buffer[BINARY_CAPACITY];
 
   /* Initialize the VGA writer */
@@ -32,10 +32,16 @@ int main(void)
     vgg_svg_color color_green = {0, 255, 0};
     vgg_svg_color color_blue = {0, 0, 255};
 
-    vgg_svg_add_rect(&w, 1, 0, 0, 50, 50, color_red);
-    vgg_svg_add_rect(&w, 2, 0, 50, 50, 50, color_green);
-    vgg_svg_add_rect(&w, 3, 50, 0, 50, 50, color_blue);
-    vgg_svg_add_rect(&w, 4, 50, 50, 50, 50, color_red);
+    vgg_svg_data_field data_field = {"weight", "20.0"};
+    vgg_svg_data_field data_field2 = {"num_lines_of_code", "165"};
+    vgg_svg_data_field data_fields[2];
+    data_fields[0] = data_field;
+    data_fields[1] = data_field2;
+
+    vgg_svg_add_rect(&w, 1, 0, 0, 50, 50, color_red, 0, 0);
+    vgg_svg_add_rect(&w, 2, 0, 50, 50, 50, color_green, 0, 0);
+    vgg_svg_add_rect(&w, 3, 50, 0, 50, 50, color_blue, 0, 0);
+    vgg_svg_add_rect(&w, 4, 50, 50, 50, 50, color_red, data_fields, 2);
   }
   vgg_svg_end(&w);
 
