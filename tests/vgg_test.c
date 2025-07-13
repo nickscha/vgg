@@ -23,9 +23,22 @@ void vgg_test_data_field(void)
   printf("%s, %s\n", f1.key, f1.value);
 }
 
-int main(void)
+void vgg_test_color_map_linear(void)
 {
+  vgg_color start = {144, 224, 239}; /* Start (light teal): 144, 224, 239 */
+  vgg_color end = {255, 85, 0};      /*  End (dark orange): 255,  85,   0 */
 
+  vgg_color current;
+
+  current = vgg_color_map_linear(0.0, 0.0, 1.0, start, end);
+  assert(current.r == 144 && current.g == 224 && current.b == 239);
+
+  current = vgg_color_map_linear(1.0, 0.0, 1.0, start, end);
+  assert(current.r == 255 && current.g == 85 && current.b == 0);
+}
+
+void vgg_test_svg_write_simple(void)
+{
 /* vgg.h does not use File IO and just fills the buffer with the executable file data */
 #define BINARY_CAPACITY 4096
   static unsigned char binary_buffer[BINARY_CAPACITY];
@@ -36,9 +49,9 @@ int main(void)
   /* Start the SVG section for an 100x100 area */
   vgg_svg_start(&w, 100, 100);
   {
-    vgg_svg_color color_red = {255, 0, 0};
-    vgg_svg_color color_green = {0, 255, 0};
-    vgg_svg_color color_blue = {0, 0, 255};
+    vgg_color color_red = {255, 0, 0};
+    vgg_color color_green = {0, 255, 0};
+    vgg_color color_blue = {0, 0, 255};
 
     vgg_svg_data_field data_field = {"weight", "20.0"};
     vgg_svg_data_field data_field2 = {"num_lines_of_code", "165"};
@@ -56,10 +69,13 @@ int main(void)
   /* By default vgg itself does not use file IO to stay nostdlib and platform independant                                */
   /* If you want a small file write implementation (nostdlib but platform dependant) than include "vgg_platform_write.h" */
   vgg_platform_write("test.svg", w.buffer, (unsigned long)w.length);
+}
 
-  assert(1 == 1);
-
+int main(void)
+{
   vgg_test_data_field();
+  vgg_test_color_map_linear();
+  vgg_test_svg_write_simple();
 
   return 0;
 }
