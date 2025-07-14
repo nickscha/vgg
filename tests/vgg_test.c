@@ -18,7 +18,7 @@ LICENSE
 void vgg_test_data_field(void)
 {
   char value_buffer[32];
-  vgg_svg_data_field f1 = vgg_data_field_create_float("weight", 20.0f, 4, value_buffer);
+  vgg_data_field f1 = vgg_data_field_create_float("weight", 20.0f, 4, value_buffer);
 
   printf("%s, %s\n", f1.key, f1.value);
 }
@@ -37,7 +37,7 @@ void vgg_test_color_map_linear(void)
   assert(current.r == 255 && current.g == 85 && current.b == 0);
 }
 
-void vgg_test_svg_write_simple(void)
+void vgg_test_svg_write_rect(void)
 {
 /* vgg.h does not use File IO and just fills the buffer with the executable file data */
 #define BINARY_CAPACITY 4096
@@ -46,36 +46,46 @@ void vgg_test_svg_write_simple(void)
   /* Initialize the VGA writer */
   vgg_svg_writer w = {binary_buffer, BINARY_CAPACITY, 0};
 
-  /* Start the SVG section for an 100x100 area */
-  vgg_svg_start(&w, 100, 100);
+  vgg_color color_green = {0, 255, 0};
+
+  vgg_rect rect = {0};
+
+  vgg_data_field data_field = {"weight", "20.0"};
+  vgg_data_field data_field2 = {"num_lines_of_code", "165"};
+  vgg_data_field data_fields[2];
+
+  data_fields[0] = data_field;
+  data_fields[1] = data_field2;
+
+  /* General header fields */
+  rect.header.id = 0;
+  rect.header.type = VGG_TYPE_RECT;
+  rect.header.color_fill = color_green;
+  rect.header.data_fields = data_fields;
+  rect.header.data_fields_count = 2;
+
+  /* Rect specific fields */
+  rect.x = 0.0;
+  rect.y = 0.0;
+  rect.width = 800;
+  rect.height = 300;
+
+  vgg_svg_start(&w, "vgg_svg", 800, 300);
   {
-    vgg_color color_red = {255, 0, 0};
-    vgg_color color_green = {0, 255, 0};
-    vgg_color color_blue = {0, 0, 255};
-
-    vgg_svg_data_field data_field = {"weight", "20.0"};
-    vgg_svg_data_field data_field2 = {"num_lines_of_code", "165"};
-    vgg_svg_data_field data_fields[2];
-    data_fields[0] = data_field;
-    data_fields[1] = data_field2;
-
-    vgg_svg_add_rect(&w, 1, 0, 0, 50, 50, color_red, 0, 0);
-    vgg_svg_add_rect(&w, 2, 0, 50, 50, 50, color_green, 0, 0);
-    vgg_svg_add_rect(&w, 3, 50, 0, 50, 50, color_blue, 0, 0);
-    vgg_svg_add_rect(&w, 4, 50, 50, 50, 50, color_red, data_fields, 2);
+    vgg_svg_element_add(&w, (vgg_header *)&rect);
   }
   vgg_svg_end(&w);
 
   /* By default vgg itself does not use file IO to stay nostdlib and platform independant                                */
   /* If you want a small file write implementation (nostdlib but platform dependant) than include "vgg_platform_write.h" */
-  vgg_platform_write("test.svg", w.buffer, (unsigned long)w.length);
+  vgg_platform_write("test_rect.svg", w.buffer, (unsigned long)w.length);
 }
 
 int main(void)
 {
   vgg_test_data_field();
   vgg_test_color_map_linear();
-  vgg_test_svg_write_simple();
+  vgg_test_svg_write_rect();
 
   return 0;
 }
