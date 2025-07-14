@@ -76,9 +76,9 @@ VGG_API VGG_INLINE vgg_color vgg_color_map_linear(
     }
   }
 
-  color.r = (int) (color_start.r + t * (color_end.r - color_start.r));
-  color.g = (int) (color_start.g + t * (color_end.g - color_start.g));
-  color.b = (int) (color_start.b + t * (color_end.b - color_start.b));
+  color.r = (int)(color_start.r + t * (color_end.r - color_start.r));
+  color.g = (int)(color_start.g + t * (color_end.g - color_start.g));
+  color.b = (int)(color_start.b + t * (color_end.b - color_start.b));
 
   return color;
 }
@@ -103,7 +103,9 @@ VGG_API VGG_INLINE char *vgg_itoa(int value, char *buffer)
 
   sign = (value < 0) ? -1 : 1;
   if (sign == -1)
+  {
     value = -value;
+  }
 
   while (value != 0)
   {
@@ -111,11 +113,15 @@ VGG_API VGG_INLINE char *vgg_itoa(int value, char *buffer)
     value /= 10;
   }
   if (sign == -1)
+  {
     temp[i++] = '-';
+  }
 
   /* reverse */
-  for (j = 0; j < i; j++)
+  for (j = 0; j < i; ++j)
+  {
     buffer[j] = temp[i - j - 1];
+  }
   buffer[i] = 0;
   return buffer;
 }
@@ -143,10 +149,14 @@ VGG_API VGG_INLINE char *vgg_ltoa(long value, char *buffer)
     value /= 10;
   }
   if (sign == -1)
+  {
     temp[i++] = '-';
+  }
 
-  for (j = 0; j < i; j++)
+  for (j = 0; j < i; ++j)
+  {
     buffer[j] = temp[i - j - 1];
+  }
   buffer[i] = 0;
   return buffer;
 }
@@ -170,8 +180,10 @@ VGG_API VGG_INLINE char *vgg_ultoa(unsigned long value, char *buffer)
     value /= 10;
   }
 
-  for (j = 0; j < i; j++)
+  for (j = 0; j < i; ++j)
+  {
     buffer[j] = temp[i - j - 1];
+  }
   buffer[i] = 0;
   return buffer;
 }
@@ -182,9 +194,13 @@ VGG_API VGG_INLINE char *vgg_ftoa(double value, char *buffer, int precision)
   int multiplier = 1;
 
   if (precision < 0)
+  {
     precision = 0;
+  }
   if (precision > 9)
+  {
     precision = 9; /* prevent overflow */
+  }
 
   /* Sign */
   if (value < 0)
@@ -239,11 +255,15 @@ VGG_API VGG_INLINE char *vgg_ftoa(double value, char *buffer, int precision)
 
       /* Zero padding if needed */
       while (k < precision)
+      {
         temp[k++] = '0';
+      }
 
       /* Copy reversed string to buffer */
       while (k > 0)
+      {
         buffer[i++] = temp[--k];
+      }
     }
   }
 
@@ -297,7 +317,7 @@ VGG_API VGG_INLINE vgg_svg_data_field vgg_data_field_create_double(char *key, do
 }
 
 /* Write a string literal to the buffer */
-VGG_API VGG_INLINE void vgg_svg_puts(vgg_svg_writer *w, const char *s)
+VGG_API VGG_INLINE void vgg_svg_puts(vgg_svg_writer *w, char *s)
 {
   while (*s && w->length < w->capacity)
   {
@@ -389,7 +409,7 @@ VGG_API VGG_INLINE void vgg_svg_add_rect(
     vgg_svg_data_field *data_fields,
     int data_fields_count)
 {
-  static const char hex[] = "0123456789ABCDEF";
+  static char hex[] = "0123456789ABCDEF";
   int i;
   char color[7];
 
