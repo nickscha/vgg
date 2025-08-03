@@ -47,7 +47,12 @@ typedef struct vgg_data_field
 
 typedef enum vgg_header_type
 {
-  VGG_TYPE_RECT
+  VGG_TYPE_RECT,
+  VGG_TYPE_CIRCLE,
+  VGG_TYPE_LINE,
+  VGG_TYPE_ELLIPSE,
+  VGG_TYPE_TEXT,
+  VGG_TYPE_PATH
 
 } vgg_header_type;
 
@@ -74,6 +79,49 @@ typedef struct vgg_rect
   double height;
 
 } vgg_rect;
+
+typedef struct vgg_circle
+{
+  vgg_header header;
+
+  double cx;
+  double cy;
+  double r;
+
+} vgg_circle;
+
+typedef struct vgg_line
+{
+  vgg_header header;
+
+  double x1, y1, x2, y2;
+
+} vgg_line;
+
+typedef struct vgg_ellipse
+{
+  vgg_header header;
+
+  double cx, cy, rx, ry;
+
+} vgg_ellipse;
+
+typedef struct vgg_text
+{
+  vgg_header header;
+
+  double x, y;
+  char *text;
+
+} vgg_text;
+
+typedef struct vgg_path
+{
+  vgg_header header;
+
+  char *d; /* Path string, e.g. "M10 10 L90 10 L90 90 Z" */
+
+} vgg_path;
 
 typedef struct vgg_svg_writer
 {
@@ -498,6 +546,95 @@ VGG_API VGG_INLINE void vgg_svg_element_add(
     /* Rect height value */
     vgg_svg_puts(w, "height=\"");
     vgg_svg_put_double(w, rect->height);
+    vgg_svg_puts(w, "\" ");
+  }
+  else if (header->type == VGG_TYPE_LINE)
+  {
+    vgg_line *line = (vgg_line *)header;
+
+    vgg_svg_puts(w, "line ");
+
+    vgg_svg_puts(w, "x1=\"");
+    vgg_svg_put_double(w, line->x1);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "y1=\"");
+    vgg_svg_put_double(w, line->y1);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "x2=\"");
+    vgg_svg_put_double(w, line->x2);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "y2=\"");
+    vgg_svg_put_double(w, line->y2);
+    vgg_svg_puts(w, "\" ");
+  }
+  else if (header->type == VGG_TYPE_ELLIPSE)
+  {
+    vgg_ellipse *ellipse = (vgg_ellipse *)header;
+
+    vgg_svg_puts(w, "ellipse ");
+
+    vgg_svg_puts(w, "cx=\"");
+    vgg_svg_put_double(w, ellipse->cx);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "cy=\"");
+    vgg_svg_put_double(w, ellipse->cy);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "rx=\"");
+    vgg_svg_put_double(w, ellipse->rx);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "ry=\"");
+    vgg_svg_put_double(w, ellipse->ry);
+    vgg_svg_puts(w, "\" ");
+  }
+  else if (header->type == VGG_TYPE_CIRCLE)
+  {
+    vgg_circle *circle = (vgg_circle *)header;
+
+    vgg_svg_puts(w, "circle ");
+
+    vgg_svg_puts(w, "cx=\"");
+    vgg_svg_put_double(w, circle->cx);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "cy=\"");
+    vgg_svg_put_double(w, circle->cy);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "r=\"");
+    vgg_svg_put_double(w, circle->r);
+    vgg_svg_puts(w, "\" ");
+  }
+  else if (header->type == VGG_TYPE_TEXT)
+  {
+    vgg_text *text = (vgg_text *)header;
+
+    vgg_svg_puts(w, "text ");
+
+    vgg_svg_puts(w, "x=\"");
+    vgg_svg_put_double(w, text->x);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "y=\"");
+    vgg_svg_put_double(w, text->y);
+    vgg_svg_puts(w, "\" ");
+
+    vgg_svg_puts(w, "text=\"");
+    vgg_svg_puts(w, text->text);
+    vgg_svg_puts(w, "\" ");
+  }
+  else if (header->type == VGG_TYPE_PATH)
+  {
+    vgg_path *path = (vgg_path *)header;
+
+    vgg_svg_puts(w, "path d=\"");
+
+    vgg_svg_puts(w, path->d);
     vgg_svg_puts(w, "\" ");
   }
 
