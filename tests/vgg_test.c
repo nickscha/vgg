@@ -81,11 +81,79 @@ void vgg_test_svg_write_rect(void)
   vgg_platform_write("test_rect.svg", w.buffer, (unsigned long)w.length);
 }
 
+void vgg_test_svg_write_circle(void)
+{
+/* vgg.h does not use File IO and just fills the buffer with the executable file data */
+#define BINARY_CAPACITY 4096
+  static unsigned char binary_buffer[BINARY_CAPACITY];
+
+  /* Initialize the VGA writer */
+  vgg_svg_writer w = {binary_buffer, BINARY_CAPACITY, 0};
+
+  vgg_color color_red = {255, 0, 0};
+
+  vgg_circle circle = {0};
+
+  /* General header fields */
+  circle.header.type = VGG_TYPE_CIRCLE;
+  circle.header.color_fill = color_red;
+
+  /* Circle specific fields */
+  circle.cx = 200.0;
+  circle.cy = 200.0;
+  circle.r = 100.0;
+
+  vgg_svg_start(&w, "vgg_svg", 400, 400);
+  {
+    vgg_svg_element_add(&w, (vgg_header *)&circle);
+  }
+  vgg_svg_end(&w);
+
+  /* By default vgg itself does not use file IO to stay nostdlib and platform independant                                */
+  /* If you want a small file write implementation (nostdlib but platform dependant) than include "vgg_platform_write.h" */
+  vgg_platform_write("test_circle.svg", w.buffer, (unsigned long)w.length);
+}
+
+void vgg_test_svg_write_text(void)
+{
+/* vgg.h does not use File IO and just fills the buffer with the executable file data */
+#define BINARY_CAPACITY 4096
+  static unsigned char binary_buffer[BINARY_CAPACITY];
+
+  /* Initialize the VGA writer */
+  vgg_svg_writer w = {binary_buffer, BINARY_CAPACITY, 0};
+
+  vgg_color color_red = {255, 0, 0};
+
+  vgg_text text = {0};
+
+  /* General header fields */
+  text.header.type = VGG_TYPE_TEXT;
+  text.header.color_fill = color_red;
+
+  /* Circle specific fields */
+  text.x = 100.0;
+  text.y = 100.0;
+  text.text = "test";
+
+  vgg_svg_start(&w, "vgg_svg", 400, 400);
+  {
+    vgg_svg_element_add(&w, (vgg_header *)&text);
+  }
+  vgg_svg_end(&w);
+
+  /* By default vgg itself does not use file IO to stay nostdlib and platform independant                                */
+  /* If you want a small file write implementation (nostdlib but platform dependant) than include "vgg_platform_write.h" */
+  vgg_platform_write("test_text.svg", w.buffer, (unsigned long)w.length);
+}
+
 int main(void)
 {
   vgg_test_data_field();
   vgg_test_color_map_linear();
   vgg_test_svg_write_rect();
+  vgg_test_svg_write_circle();
+vgg_test_svg_write_text();
 
   return 0;
 }

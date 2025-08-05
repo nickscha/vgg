@@ -623,10 +623,6 @@ VGG_API VGG_INLINE void vgg_svg_element_add(
     vgg_svg_puts(w, "y=\"");
     vgg_svg_put_double(w, text->y);
     vgg_svg_puts(w, "\" ");
-
-    vgg_svg_puts(w, "text=\"");
-    vgg_svg_puts(w, text->text);
-    vgg_svg_puts(w, "\" ");
   }
   else if (header->type == VGG_TYPE_PATH)
   {
@@ -658,8 +654,18 @@ VGG_API VGG_INLINE void vgg_svg_element_add(
     vgg_svg_puts(w, "\" ");
   }
 
-  /* Closing element tag */
-  vgg_svg_puts(w, "/>\n");
+  if (header->type != VGG_TYPE_TEXT)
+  {
+    /* Closing element tag */
+    vgg_svg_puts(w, "/>\n");
+  }
+  else
+  {
+    vgg_text *text = (vgg_text *)header;
+    vgg_svg_puts(w, ">");
+    vgg_svg_puts(w, text->text);
+    vgg_svg_puts(w, "</text>\n");
+  }
 }
 
 #endif /* VGG_H */
